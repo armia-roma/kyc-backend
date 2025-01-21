@@ -12,6 +12,11 @@ const registerSchema = Joi.object({
 	}),
 });
 
+const loginSchema = Joi.object({
+	email: Joi.string().email().required(),
+	password: Joi.string().min(6).required(),
+});
+
 class AuthValidation {
 	validateRegistration() {
 		return (req: Request, res: Response, next: NextFunction): void => {
@@ -23,6 +28,19 @@ class AuthValidation {
 				responseEntity.error = error.details;
 				res.status(404).json(responseEntity);
 				return;
+			}
+			next();
+		};
+	}
+	validateLogin() {
+		return (req: Request, res: Response, next: NextFunction): void => {
+			const { error } = loginSchema.validate(req.body);
+			if (error) {
+				responseEntity.status = 400;
+				responseEntity.message = error.message;
+				responseEntity.data = null;
+				responseEntity.error = error.details;
+				res.status(404).json(responseEntity);
 			}
 			next();
 		};
