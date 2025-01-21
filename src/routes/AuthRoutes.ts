@@ -9,5 +9,6 @@ router.post(
 	authValidation.validateRegistration(),
 	UserController.register
 );
+router.post("/login", authValidation.validateLogin(), UserController.register);
 
 export default router;
