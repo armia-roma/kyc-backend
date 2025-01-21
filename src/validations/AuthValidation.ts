@@ -41,6 +41,7 @@ class AuthValidation {
 				responseEntity.data = null;
 				responseEntity.error = error.details;
 				res.status(404).json(responseEntity);
+				return;
 			}
 			next();
 		};
