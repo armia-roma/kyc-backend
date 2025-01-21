@@ -12,9 +12,23 @@ class UserController {
 				password,
 				role
 			);
-			res.json(user);
+			responseEntity.status = 201;
+			responseEntity.message = "User registered successfully";
+			responseEntity.data = {
+				id: user._id,
+				userName: user.userName,
+				email: user.email,
+			};
+			responseEntity.error = null;
+
+			res.status(201).json(responseEntity);
 		} catch (error: any) {
-			res.json(error);
+			responseEntity.status = 400;
+			responseEntity.message = error.message;
+			responseEntity.data = null;
+			responseEntity.error = error;
+
+			res.status(400).json(responseEntity);
 		}
 	}
 }
