@@ -1,6 +1,11 @@
 import { IUser } from "../models/User";
 import UserRepository from "../repositories/UserRepository";
 import bcrypt from "bcryptjs";
+import jwtConfig from "../config/JwtConfig";
+import jwt from "jsonwebtoken";
+
+const { jwtSecret, jwtExpiration } = jwtConfig;
+
 class UserService {
 	async register(
 		userName: string,
@@ -30,6 +35,11 @@ class UserService {
 		if (!isMatch) {
 			throw new Error("Invalid credentials");
 		}
+		// Generate JWT Token
+		const token = jwt.sign({ email: user.email }, jwtSecret, {
+			expiresIn: jwtExpiration,
+		});
+		return { email: user.email, id: user._id, token };
 	}
 }
 export default new UserService();
