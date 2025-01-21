@@ -21,5 +21,15 @@ class UserService {
 		} as IUser);
 		return user;
 	}
+	async login(email: string, password: string) {
+		const user = await UserRepository.findByEmail(email);
+		if (!user) {
+			throw new Error("User not found");
+		}
+		const isMatch = await bcrypt.compare(password, user.password);
+		if (!isMatch) {
+			throw new Error("Invalid credentials");
+		}
+	}
 }
 export default new UserService();
