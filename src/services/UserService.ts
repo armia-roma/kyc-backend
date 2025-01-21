@@ -36,9 +36,13 @@ class UserService {
 			throw new Error("Invalid credentials");
 		}
 		// Generate JWT Token
-		const token = jwt.sign({ email: user.email }, jwtSecret, {
-			expiresIn: jwtExpiration,
-		});
+		const token = jwt.sign(
+			{ email: user.email, role: user.role },
+			jwtSecret,
+			{
+				expiresIn: jwtExpiration,
+			}
+		);
 		return { email: user.email, id: user._id, token };
 	}
 }
