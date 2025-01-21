@@ -34,20 +34,20 @@ class UserController {
 	async login(req: Request, res: Response) {
 		try {
 			const { email, password } = req.body;
-			const token = UserService.login(email, password);
+			const token = await UserService.login(email, password);
 			responseEntity.status = 200;
 			responseEntity.message = "Login successful";
-			responseEntity.data = { token };
+			responseEntity.data = { token: token };
 			responseEntity.error = null;
 
-			return res.status(200).json(responseEntity);
+			res.status(200).json(responseEntity);
 		} catch (error: any) {
 			responseEntity.status = 400;
 			responseEntity.message = error.message;
 			responseEntity.data = null;
 			responseEntity.error = error;
 
-			return res.status(400).json(responseEntity);
+			res.status(400).json(responseEntity);
 		}
 	}
 }
