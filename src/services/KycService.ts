@@ -28,5 +28,13 @@ class KycService {
 			throw new Error("Failed to create KYC record");
 		}
 	}
+	async list() {
+		try {
+			const kycs = await KycRepository.list();
+			return kycs;
+		} catch (error: any) {
+			throw new Error("Failed to list KYC records");
+		}
+	}
 }
 export default new KycService();
