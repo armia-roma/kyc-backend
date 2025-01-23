@@ -35,7 +35,6 @@ class UserService {
 		if (!isMatch) {
 			throw new Error("Invalid credentials");
 		}
-		// Generate JWT Token
 		const token = jwt.sign(
 			{ email: user.email, role: user.role },
 			jwtSecret,
@@ -43,7 +42,7 @@ class UserService {
 				expiresIn: jwtExpiration,
 			}
 		);
-		return { email: user.email, id: user._id, token };
+		return { email: user.email, id: user._id, token, role: user.role };
 	}
 }
 export default new UserService();
