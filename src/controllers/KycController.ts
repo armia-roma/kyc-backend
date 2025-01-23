@@ -60,6 +60,11 @@ class KycController {
 			}
 		}
 	};
+	async list(req: Request, res: Response) {
+		const list = await KycService.list();
+		ResponseEntity.setResponse(200, "KYC list", list);
+		res.status(200).json(ResponseEntity);
+	}
 }
 
 export default new KycController();
