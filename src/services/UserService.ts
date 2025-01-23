@@ -36,13 +36,18 @@ class UserService {
 			throw new Error("Invalid credentials");
 		}
 		const token = jwt.sign(
-			{ email: user.email, role: user.role },
+			{ id: user._id, userName: user.userName, role: user.role },
 			jwtSecret,
 			{
 				expiresIn: jwtExpiration,
 			}
 		);
-		return { email: user.email, id: user._id, token, role: user.role };
+		return {
+			id: user._id,
+			userName: user.userName,
+			token,
+			role: user.role,
+		};
 	}
 }
 export default new UserService();
