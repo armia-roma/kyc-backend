@@ -14,13 +14,13 @@ interface IKyc extends Document {
 	email: string;
 	file_path: string;
 	status: Status;
-	user: IUser;
+	user: Partial<IUser>;
 }
 const kycSchema = new mongoose.Schema(
 	{
-		name: { type: String, required: true },
+		full_name: { type: String, required: true },
 		email: { type: String, required: true, unique: true },
-		phone: { type: String, required: true },
+		phone_number: { type: String, required: true },
 		address: { type: String, required: true },
 		file_path: { type: String, required: true },
 		status: {
