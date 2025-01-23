@@ -12,21 +12,13 @@ class UserController {
 				password,
 				role
 			);
-			responseEntity.status = 201;
-			responseEntity.message = "User registered successfully";
-			responseEntity.data = {
-				id: user._id,
-				userName: user.userName,
-				email: user.email,
-			};
+			responseEntity.setResponse(201, "User registered successfully");
+
 			responseEntity.error = null;
 
 			res.status(201).json(responseEntity);
 		} catch (error: any) {
-			responseEntity.status = 400;
-			responseEntity.message = error.message;
-			responseEntity.data = null;
-			responseEntity.error = error;
+			responseEntity.setResponse(400, error.message, null, error);
 
 			res.status(400).json(responseEntity);
 		}
@@ -35,17 +27,11 @@ class UserController {
 		try {
 			const { email, password } = req.body;
 			const token = await UserService.login(email, password);
-			responseEntity.status = 200;
-			responseEntity.message = "Login successful";
-			responseEntity.data = { token: token };
-			responseEntity.error = null;
+			responseEntity.setResponse(200, "Login successful", token);
 
 			res.status(200).json(responseEntity);
 		} catch (error: any) {
-			responseEntity.status = 400;
-			responseEntity.message = error.message;
-			responseEntity.data = null;
-			responseEntity.error = error;
+			responseEntity.setResponse(400, error.message, null, error);
 
 			res.status(400).json(responseEntity);
 		}
