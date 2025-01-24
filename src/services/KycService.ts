@@ -44,5 +44,22 @@ class KycService {
 			throw new Error("Failed to find KYC record");
 		}
 	}
+	async approve(id: string) {
+		try {
+			const kyc = await KycRepository.findById(id);
+			if (!kyc) {
+				throw new Error("KYC record not found");
+			}
+
+			if (kyc.status === "approved") {
+				throw new Error("KYC is already approved");
+			}
+
+			const updatedKyc = await KycRepository.approve(id);
+			return updatedKyc;
+		} catch (error: any) {
+			throw error;
+		}
+	}
 }
 export default new KycService();
