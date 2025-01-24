@@ -14,5 +14,5 @@ router.post(
 );
 router.get("/list", authMiddleware, KycController.list);
 router.get("/:id", authMiddleware, KycController.findById);
-
+router.put("/approve/:id", authMiddleware, KycController.approve);
 export default router;
