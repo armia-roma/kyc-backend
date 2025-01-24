@@ -6,5 +6,9 @@ class KycRepository {
 	async list(): Promise<IKyc[]> {
 		return await Kyc.find();
 	}
+	async findById(id: string): Promise<IKyc | null> {
+		return await Kyc.findById(id);
+	}
 }
+
 export default new KycRepository();
