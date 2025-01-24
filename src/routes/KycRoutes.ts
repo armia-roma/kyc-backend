@@ -21,4 +21,10 @@ router.put(
 	authorizeRoles(["admin"]),
 	KycController.approve
 );
+router.put(
+	"/reject/:id",
+	authMiddleware,
+	authorizeRoles(["admin"]),
+	KycController.reject
+);
 export default router;
