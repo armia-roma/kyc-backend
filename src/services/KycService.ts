@@ -61,5 +61,22 @@ class KycService {
 			throw error;
 		}
 	}
+	async reject(id: string) {
+		try {
+			const kyc = await KycRepository.findById(id);
+			if (!kyc) {
+				throw new Error("KYC record not found");
+			}
+
+			if (kyc.status === "rejected") {
+				throw new Error("KYC is already rejected");
+			}
+
+			const updatedKyc = await KycRepository.reject(id);
+			return updatedKyc;
+		} catch (error: any) {
+			throw error;
+		}
+	}
 }
 export default new KycService();
