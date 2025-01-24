@@ -66,9 +66,15 @@ class KycController {
 		res.status(200).json(ResponseEntity);
 	}
 	async findById(req: Request, res: Response) {
-		const kyc = await KycService.findById(req.params.id);
-		ResponseEntity.setResponse(200, "KYC list", kyc);
-		res.status(200).json(ResponseEntity);
+		try {
+			const kyc = await KycService.findById(req.params.id);
+			ResponseEntity.setResponse(200, "KYC list", kyc);
+			res.status(200).json(ResponseEntity);
+		} catch (error: any) {
+			const statusCode = error.message.includes("not found") ? 404 : 500;
+			ResponseEntity.setResponse(statusCode, error.message);
+			res.status(statusCode).json(ResponseEntity);
+		}
 	}
 	async approve(req: Request, res: Response) {
 		try {
@@ -81,6 +87,25 @@ class KycController {
 			res.status(200).json(ResponseEntity);
 		} catch (error: any) {
 			const statusCode = error.message.includes("already approved")
+				? 400
+				: error.message.includes("not found")
+				? 404
+				: 500;
+			ResponseEntity.setResponse(statusCode, error.message);
+			res.status(statusCode).json(ResponseEntity);
+		}
+	}
+	async reject(req: Request, res: Response) {
+		try {
+			const kyc = await KycService.reject(req.params.id);
+			ResponseEntity.setResponse(
+				200,
+				"KYC has been rejected successfully",
+				kyc
+			);
+			res.status(200).json(ResponseEntity);
+		} catch (error: any) {
+			const statusCode = error.message.includes("already rejected")
 				? 400
 				: error.message.includes("not found")
 				? 404
