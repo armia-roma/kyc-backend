@@ -36,5 +36,13 @@ class KycService {
 			throw new Error("Failed to list KYC records");
 		}
 	}
+	async findById(id: string) {
+		try {
+			const kyc = await KycRepository.findById(id);
+			return kyc;
+		} catch (error: any) {
+			throw new Error("Failed to find KYC record");
+		}
+	}
 }
 export default new KycService();
