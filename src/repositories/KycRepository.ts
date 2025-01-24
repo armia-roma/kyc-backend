@@ -16,6 +16,13 @@ class KycRepository {
 			throw error;
 		}
 	}
+	async reject(id: string) {
+		try {
+			return await Kyc.findByIdAndUpdate(id, {status: "rejected"});
+		} catch (error: any) {
+			throw error;
+		}
+	}
 }
 
 export default new KycRepository();
