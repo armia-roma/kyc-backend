@@ -1,9 +1,15 @@
 import jwt, {JwtPayload} from "jsonwebtoken";
 import {Request, Response, NextFunction} from "express";
 import ResponseEntity from "../../utils/ResponseEntity";
+import {IUser, Role} from "../models/User";
+interface IUserPayload extends JwtPayload {
+	id: string;
+	userName: string;
+	role: Role;
+}
 
-interface AuthRequest extends Request {
-	user?: JwtPayload | string;
+export interface AuthRequest extends Request {
+	user?: IUserPayload;
 }
 
 export default function authenticateToken(
@@ -30,9 +36,19 @@ export default function authenticateToken(
 				res.status(403).json(ResponseEntity);
 				return;
 			}
-			console.log(user, "auth user middleware");
-			req.user = user as {id: string; userName: string; role: string};
+
+			req.user = user;
 			next();
 		}
 	);
+}
+export function authorizeRoles(allowRoles: string[]) {
+	return (req: AuthRequest, res: Response, next: NextFunction) => {
+		if (req.user && !allowRoles.includes(req.user.role)) {
+			ResponseEntity.setResponse(403, "Forbidden");
+			res.status(403).json(ResponseEntity);
+			return;
+		}
+		next();
+	};
 }
