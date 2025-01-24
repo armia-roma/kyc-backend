@@ -13,5 +13,6 @@ router.post(
 	KycController.create
 );
 router.get("/list", authMiddleware, KycController.list);
+router.get("/:id", authMiddleware, KycController.findById);
 
 export default router;
