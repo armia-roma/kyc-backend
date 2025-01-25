@@ -1,6 +1,6 @@
 import Joi from "joi";
 import { Request, Response, NextFunction } from "express";
-import responseEntity from "../../utils/ResponseEntity";
+import { AppError } from "../errors/AppError";
 
 const Schema = Joi.object({
 	full_name: Joi.string().required(),
@@ -18,24 +18,13 @@ const Schema = Joi.object({
 class KycValidation {
 	validateKycCreation() {
 		return (req: Request, res: Response, next: NextFunction): void => {
-			console.log(req.body);
 			const { error } = Schema.validate(req.body);
 
 			if (error) {
-				responseEntity.setResponse(
-					400,
-					error.message,
-					null,
-					error.details
-				);
-				res.status(404).json(responseEntity);
-				return;
+				throw new AppError(error.message);
 			}
 			if (!req.file) {
-				responseEntity.setResponse(400, "File is required", null, null);
-
-				res.status(400).json(responseEntity);
-				return;
+				throw new AppError("File is required");
 			}
 			next();
 		};

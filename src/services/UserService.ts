@@ -3,6 +3,8 @@ import UserRepository from "../repositories/UserRepository";
 import bcrypt from "bcryptjs";
 import jwtConfig from "../config/JwtConfig";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { AppError } from "../errors/AppError";
+import { NotFoundError } from "../errors/NotFoundError";
 
 const { jwtSecret, jwtExpiration } = jwtConfig;
 
@@ -15,7 +17,7 @@ class UserService {
 	) {
 		const existingUser = await UserRepository.findByEmail(email);
 		if (existingUser) {
-			throw new Error("User already exists");
+			throw new AppError("User already exists");
 		}
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const user = await UserRepository.create({
@@ -26,14 +28,15 @@ class UserService {
 		} as IUser);
 		return user;
 	}
+
 	async login(email: string, password: string) {
 		const user = await UserRepository.findByEmail(email);
 		if (!user) {
-			throw new Error("User not found");
+			throw new NotFoundError("Invalid credentials");
 		}
 		const isMatch = await bcrypt.compare(password, user.password);
 		if (!isMatch) {
-			throw new Error("Invalid credentials");
+			throw new NotFoundError("Invalid credentials");
 		}
 		const token = jwt.sign(
 			{ id: user._id, userName: user.userName, role: user.role },
@@ -48,23 +51,6 @@ class UserService {
 			token,
 			role: user.role,
 		};
-	}
-	async verify(token: string) {
-		try {
-			const decodedToken = (await jwt.verify(
-				token,
-				process.env.TOKEN_SECRET as string
-			)) as JwtPayload;
-			const user = await User.findById(decodedToken.id);
-
-			if (!user) {
-				throw new Error("Invalid token");
-			}
-
-			return user;
-		} catch (error) {
-			throw new Error("Something Went Wrong");
-		}
 	}
 }
 export default new UserService();

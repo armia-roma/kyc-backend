@@ -1,33 +1,26 @@
-import {Request, Response, NextFunction} from "express";
-import {JwtPayload} from "jsonwebtoken";
+import { Request, Response, NextFunction } from "express";
 import KycService from "./../services/KycService";
-import ResponseEntity from "../../utils/ResponseEntity";
-import {IUser, Role} from "../models/User";
+import { IUser, Role } from "../models/User";
 
-interface AuthRequest extends Request {
-	user?: JwtPayload | string;
-}
+import { AuthRequest } from "../middlewares/authMiddleware";
+import { AppError } from "../errors/AppError";
+import { NotFoundError } from "../errors/NotFoundError";
 
 class KycController {
 	create = async (
-		req: Request,
+		req: AuthRequest,
 		res: Response,
 		next: NextFunction
 	): Promise<void> => {
 		try {
-			const {full_name, email, address, phone_number} = req.body;
+			const { full_name, email, address, phone_number } = req.body;
 			const file_path = req.file?.path ?? "";
 
 			if (!file_path) {
-				ResponseEntity.setResponse(400, "File path is required");
-				res.status(400).json(ResponseEntity);
+				res.status(400).json({ message: "file is required" });
 				return;
 			}
-			const userPayload = (req as AuthRequest).user as {
-				id: string;
-				userName: string;
-				role: string;
-			};
+			const userPayload = req.user;
 
 			const userData: Partial<IUser> = userPayload
 				? {
@@ -48,70 +41,62 @@ class KycController {
 				file_path,
 				user: userData,
 			});
-
-			ResponseEntity.setResponse(201, "KYC created successfully", kyc);
-			res.status(201).json(ResponseEntity);
-			return;
+			res.status(201).json({
+				data: kyc,
+				message: "Kyc created successfully",
+			});
 		} catch (error: any) {
-			if (error.message.includes("Validation error")) {
-				ResponseEntity.setResponse(400, error.message, null, error);
-				res.status(400).json(ResponseEntity);
-				return;
-			}
+			next(error);
 		}
 	};
-	async list(req: Request, res: Response) {
-		const list = await KycService.list();
-		ResponseEntity.setResponse(200, "KYC list", list);
-		res.status(200).json(ResponseEntity);
-	}
-	async findById(req: Request, res: Response) {
+	async list(req: Request, res: Response, next: NextFunction) {
 		try {
-			const kyc = await KycService.findById(req.params.id);
-			ResponseEntity.setResponse(200, "KYC list", kyc);
-			res.status(200).json(ResponseEntity);
-		} catch (error: any) {
-			const statusCode = error.message.includes("not found") ? 404 : 500;
-			ResponseEntity.setResponse(statusCode, error.message);
-			res.status(statusCode).json(ResponseEntity);
+			const list = await KycService.list();
+			res.status(200).json({ data: list });
+		} catch (err: any) {
+			next(err);
 		}
 	}
-	async approve(req: Request, res: Response) {
+
+	async findById(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.params;
+
+			if (!id) {
+				return next(new AppError("Id is Required"));
+			}
+
+			const kyc = await KycService.findById(req.params.id);
+			if (!kyc) {
+				throw new NotFoundError("Kyc not found");
+			}
+
+			res.status(200).json({ data: kyc });
+		} catch (error: any) {
+			next(error);
+		}
+	}
+
+	async approve(req: Request, res: Response, next: NextFunction) {
 		try {
 			const kyc = await KycService.approve(req.params.id);
-			ResponseEntity.setResponse(
-				200,
-				"KYC has been approved successfully",
-				kyc
-			);
-			res.status(200).json(ResponseEntity);
+			res.status(200).json({
+				data: kyc,
+				message: "Kyc has been approved successfully",
+			});
 		} catch (error: any) {
-			const statusCode = error.message.includes("already approved")
-				? 400
-				: error.message.includes("not found")
-				? 404
-				: 500;
-			ResponseEntity.setResponse(statusCode, error.message);
-			res.status(statusCode).json(ResponseEntity);
+			next(error);
 		}
 	}
-	async reject(req: Request, res: Response) {
+	async reject(req: Request, res: Response, next: NextFunction) {
 		try {
 			const kyc = await KycService.reject(req.params.id);
-			ResponseEntity.setResponse(
-				200,
-				"KYC has been rejected successfully",
-				kyc
-			);
-			res.status(200).json(ResponseEntity);
+			res.status(200).json({
+				data: kyc,
+				message: "Kyc has been rejected successfully",
+			});
 		} catch (error: any) {
-			const statusCode = error.message.includes("already rejected")
-				? 400
-				: error.message.includes("not found")
-				? 404
-				: 500;
-			ResponseEntity.setResponse(statusCode, error.message);
-			res.status(statusCode).json(ResponseEntity);
+			next(error);
 		}
 	}
 }

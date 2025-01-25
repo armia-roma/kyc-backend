@@ -1,6 +1,7 @@
 import Joi from "joi";
 import { Request, Response, NextFunction } from "express";
 import responseEntity from "../../utils/ResponseEntity";
+import { NotFoundError } from "../errors/NotFoundError";
 
 const registerSchema = Joi.object({
 	userName: Joi.string().required(),
@@ -22,11 +23,7 @@ class AuthValidation {
 		return (req: Request, res: Response, next: NextFunction): void => {
 			const { error } = registerSchema.validate(req.body);
 			if (error) {
-				responseEntity.status = 400;
-				responseEntity.message = error.message;
-				responseEntity.data = null;
-				responseEntity.error = error.details;
-				res.status(404).json(responseEntity);
+				res.status(400).json({ error: error.details });
 				return;
 			}
 			next();
@@ -36,12 +33,7 @@ class AuthValidation {
 		return (req: Request, res: Response, next: NextFunction): void => {
 			const { error } = loginSchema.validate(req.body);
 			if (error) {
-				responseEntity.status = 400;
-				responseEntity.message = error.message;
-				responseEntity.data = null;
-				responseEntity.error = error.details;
-				res.status(404).json(responseEntity);
-				return;
+				throw new NotFoundError(error.message);
 			}
 			next();
 		};

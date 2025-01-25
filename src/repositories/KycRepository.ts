@@ -1,27 +1,24 @@
-import {Kyc, IKyc} from "../models/Kyc";
+import { Kyc, IKyc } from "../models/Kyc";
+
 class KycRepository {
-	async create(kyc: IKyc): Promise<IKyc> {
-		return await Kyc.create(kyc);
+	create(kyc: IKyc) {
+		return Kyc.create(kyc);
 	}
-	async list(): Promise<IKyc[]> {
-		return await Kyc.find();
+
+	list(): Promise<IKyc[]> {
+		return Kyc.find();
 	}
-	async findById(id: string): Promise<IKyc | null> {
-		return await Kyc.findById(id);
+
+	findById(id: string): Promise<IKyc | null> {
+		return Kyc.findById(id);
 	}
-	async approve(id: string) {
-		try {
-			return await Kyc.findByIdAndUpdate(id, {status: "approved"});
-		} catch (error: any) {
-			throw error;
-		}
+
+	approve(id: string) {
+		return Kyc.findByIdAndUpdate(id, { status: "approved" });
 	}
-	async reject(id: string) {
-		try {
-			return await Kyc.findByIdAndUpdate(id, {status: "rejected"});
-		} catch (error: any) {
-			throw error;
-		}
+
+	reject(id: string) {
+		return Kyc.findByIdAndUpdate(id, { status: "rejected" });
 	}
 }
 

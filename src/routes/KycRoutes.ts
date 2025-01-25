@@ -1,9 +1,9 @@
-import express, {Express, Request, Response} from "express";
+import express, { Express, NextFunction, Request, Response } from "express";
 import KycController from "../controllers/KycController";
-import {uploadMiddleware, upload} from "./../config/multer";
+import { uploadMiddleware, upload } from "./../config/multer";
 import KycValidation from "../validations/KycValidation";
-import authMiddleware from "./../middlewares/authMiddleware";
-import {authorizeRoles} from "./../middlewares/authMiddleware";
+import authMiddleware, { AuthRequest } from "./../middlewares/authMiddleware";
+import { authorizeRoles } from "./../middlewares/authMiddleware";
 const router = express.Router();
 
 router.post(
@@ -13,7 +13,12 @@ router.post(
 	KycValidation.validateKycCreation(),
 	KycController.create
 );
-router.get("/list", authMiddleware, KycController.list);
+router.get(
+	"/list",
+	authorizeRoles(["admin"]),
+	authMiddleware,
+	KycController.list
+);
 router.get("/:id", authMiddleware, KycController.findById);
 router.put(
 	"/approve/:id",
@@ -27,4 +32,5 @@ router.put(
 	authorizeRoles(["admin"]),
 	KycController.reject
 );
+
 export default router;
