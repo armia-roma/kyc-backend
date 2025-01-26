@@ -47,6 +47,12 @@ cd kyc-backend
 npm install
 ```
 
+### Create Upload Folder
+
+```sh
+mkdir uploads
+```
+
 ### Run Development
 
 ```sh
