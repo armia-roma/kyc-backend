@@ -13,14 +13,16 @@ This project is the backend for a simplified KYC (Know Your Customer) system, bu
 
 ### Simple Admin Registration :
 
-- Approach: For demo purposes, a basic admin user create with roles to simplify the setup.
-- Future Enhancement: Implement a scalable role base access contorl system, allowing the system admin to dynamically assign roles and permissions securely.
-  
+-   Approach: For demo purposes, a basic admin user create with roles to simplify the setup.
+-   Future Enhancement: Implement a scalable role base access contorl system, allowing the system admin to dynamically assign roles and permissions securely.
+
 ### Token Expiry and Logout :
 
 -   When a user's token expires, they are logged out immediately and must log in again.
 -   Future Enhancement: To improve the user experience, consider implementing a refresh token.
-### 
+
+###
+
 ### Document Upload
 
 -   User can upload only one document for KYC submission.
